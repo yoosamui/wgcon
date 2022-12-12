@@ -1,4 +1,3 @@
-// https://github.com/H-HChen/libnm_example
 // cmake -Bbuild -H.
 // cmake --build build
 // sudo apt install libnm-dev libglib2.0-dev

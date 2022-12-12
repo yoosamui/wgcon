@@ -19,12 +19,3 @@ include_directories(
 
 add_executable(wgcon wgcon.cpp)
 
-#add_executable(get_ipv4 get_ipv4.cpp)
-#add_executable(list_device device_type.cpp)
-#add_executable(modify_connection modify_connection.cpp)
-#add_executable(modify_password modify_password.cpp)
-##add_executable(add_wifi add_wifi_connection.cpp)
-#add_executable(add_ethernet add_ethernet_connection.cpp)
-#add_executable(get_password get_password.cpp)
-#add_executable(show_active show_active.cpp)
-#add_executable(update_ipv4 update_ipv4.cpp)
