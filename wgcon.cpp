@@ -40,7 +40,7 @@ string get_doc_string(const gchar *group_name, const gchar *key)
 GKeyFile *load_doc_file()
     {
       
-        string filepath = "/usr/share/mip-va-scan/doc.ini";
+        string filepath = "/usr/share/wgcon/doc.ini";
 
         GError *error = nullptr;
         key_file = g_key_file_new();
@@ -158,7 +158,7 @@ static void get_wireguard_connections(NMClient *client,  int index)
 				nm_client_deactivate_connection_async (client,active_con,NULL,activate_failed_cb,NULL);
 				g_main_loop_run(loop);
 
-				g_print("WireGuard Disconnected->%s\n",name);
+				g_print("\e[0mWireGuard Disconnected->%s\n",name);
 				
 			return;
 			}
@@ -173,18 +173,23 @@ static void get_wireguard_connections(NMClient *client,  int index)
 
 			string str;
 			str.append(comment);
-			str.append(", ");
-			str.append(location);
-			str.append(", ");
-			str.append(company);
+			
+			if(!location.empty()) {
+				str.append(", ");
+				str.append(location);
+			}
+
+			if(!company.empty()) {
+				str.append(", ");
+				str.append(company);
+			}
 
 			string active = is_active(client, name) == TRUE ? "*":"";
 
-			g_print("\e[0m%3d \e[1;33m%2s \e[0m[%12s] \e[1;32m%s\e[0m\n",
+			g_print("%3d %2s [%12s] %s\n",
 				idx, 
 				active.c_str(),
 				nm_connection_get_id(con), 
-				//nm_connection_get_connection_type(con),
 				str.c_str());
 
 			if(is_active(client, name)) {
