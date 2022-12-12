@@ -12,18 +12,10 @@
 
 using namespace std;
 
-typedef struct {
-	GMainLoop *loop;
-	NMActiveConnection *ac;
-
-	int remaining;
-} TestACInfo;
-
 static GMainLoop *loop = NULL;
-
 GKeyFile *key_file;
 
-string get_doc_string(const gchar *group_name, const gchar *key)
+static string get_doc_string(const gchar *group_name, const gchar *key)
 {
         GError *error = nullptr;
         char *value = g_key_file_get_string(key_file, group_name, key, &error);
@@ -37,7 +29,8 @@ string get_doc_string(const gchar *group_name, const gchar *key)
 		
         return value;
 }
-GKeyFile *load_doc_file()
+
+static GKeyFile *load_doc_file()
     {
       
         string filepath = "/usr/share/wgcon/doc.ini";
@@ -50,7 +43,7 @@ GKeyFile *load_doc_file()
 
         if (!found) {
             if (error) {
-                g_warning("Load: configuration could not be found. %s %s\n", error->message,
+                g_warning("Load: documment could not be found. %s %s\n", error->message,
                           filepath.c_str());
                 g_error_free(error);
                 error = nullptr;
@@ -70,18 +63,6 @@ static void activate_failed_cb (GObject *object,
                     GAsyncResult *result,
                     gpointer user_data)
 {
-	/*
-	NMClient *client = NM_CLIENT (object);
-	NMActiveConnection *ac;
-	GError *error = NULL;
-
-	ac = nm_client_activate_connection_finish (client, result, &error);
-	g_assert (ac == NULL);
-
-	g_assert_error (error, NM_CLIENT_ERROR, NM_CLIENT_ERROR_OBJECT_CREATION_FAILED);
-	g_clear_error (&error);
-	*/
-	
 	g_main_loop_quit (loop);
 }
 
@@ -96,34 +77,13 @@ bool is_active(NMClient *client, const char *device_name) {
 
 }
 
-void deactivate(NMClient *client, const char *device_name){
-
-	NMDevice *device;
-	NMActiveConnection *active_con;
-	//const char *name;
-
-	device = nm_client_get_device_by_iface(client, device_name);
-
-	if(!device) return;
-
-    active_con = nm_device_get_active_connection(device);
-	//name = nm_connection_get_id(con);
-
-	 g_print("Current active connection of device [%s]: %s \n", device_name, device_name);
-	 nm_client_deactivate_connection_async (client,active_con,NULL,NULL,NULL);
-
-	//
-}
-
-
 static void get_wireguard_connections(NMClient *client,  int index)
 {
 	const GPtrArray *connections;
     NMConnection *con;
 	const char *name;
 	std::vector<std::string> actives;
-	TestACInfo info = { loop, NULL, 0 };
-
+	
 	connections = nm_client_get_connections(client );
 
 	int idx = 0;
@@ -200,61 +160,6 @@ static void get_wireguard_connections(NMClient *client,  int index)
    	
 	}
 }
-/*
-void get_connections(NMClient *client,  GMainLoop *loop)
-{
-
-	const GPtrArray *connections;
-    NMConnection *con;
-	NMSettingVpn *vpn;
-	TestACInfo info = { loop, NULL, 0 };
-	
-
-	GAsyncResult *result;
-	NMActiveConnection *ac;
-	GError *error = NULL;
-
-
-
-	connections = nm_client_get_connections(client );
-
-	for (int i = 0; i < connections->len; i++) {
-	
-		con = (NMConnection *)connections->pdata[i];
-
-		if( strcmp("wireguard", nm_connection_get_connection_type(con))!=0)
-		continue;
-
-
-		//vpn = nm_connection_get_setting_vpn (con);
-		//if (vpn == NULL) continue;
-
-
-		
-
-//		g_print("network interface [%s]\n",nm_remote_connection_get_filename (con));
-
-
-
-		g_print("Connections [%s] %s\n",nm_connection_get_id (con), nm_connection_get_connection_type (con) );
-		deactivate(client, nm_connection_get_id (con));
-
-
-
-//nm_client_deactivate_connection_async (client,(NMActiveConnection*)con,NULL,NULL,NULL);
-                                       
-
-		//nm_client_activate_connection_async (client,con, NULL, NULL, NULL,NULL ,&info);
-	//	nm_connection_get_id ()
-
-	 g_object_unref(con);
-	 
-	
-	}
-
-	g_main_loop_quit (loop);
-}
-*/
 
 void get_devices(NMClient *client)
 {
@@ -276,7 +181,6 @@ void get_devices(NMClient *client)
 	 
 
 }
-
 
 int main(int argc, char *argv[])
 {
